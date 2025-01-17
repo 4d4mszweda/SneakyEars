@@ -1,0 +1,4 @@
+whisper
+tkinter
+numpy
+pydub
