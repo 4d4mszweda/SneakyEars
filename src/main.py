@@ -154,7 +154,7 @@ def change_language(lang):
 # Initialize GUI
 app = tk.Tk()
 app.title("SneakyEars")
-app.geometry("800x900")
+app.geometry("800x1100")
 
 # Style
 style = ttk.Style()
