@@ -68,8 +68,8 @@ SneakyEars to aplikacja GUI, która umożliwia przetwarzanie plików audio na te
 1. Sklonuj repozytorium:
 
    ```bash
-   git clone https://github.com/yourusername/sneakyears.git
-   cd sneakyears
+   git clone [https://github.com/yourusername/sneakyears.git](https://github.com/4d4mszweda/SneakyEars.git)
+   cd SneakyEars
    ```
 
 2. Zainstaluj wymagane biblioteki:
