@@ -1,6 +1,6 @@
 # SneakyEars
 
-SneakyEars to zaawansowana aplikacja GUI, która umożliwia przetwarzanie plików audio na tekst, tłumaczenie, podsumowywanie oraz analizowanie tekstu. Projekt wykorzystuje modele Whisper, BART oraz kilka dodatkowych bibliotek do analizy i wizualizacji danych tekstowych.
+SneakyEars to aplikacja GUI, która umożliwia przetwarzanie plików audio na tekst, tłumaczenie, podsumowywanie oraz analizowanie tekstu. Projekt wykorzystuje modele Whisper, BART oraz kilka dodatkowych bibliotek do analizy i wizualizacji danych tekstowych.
 
 ---
 
