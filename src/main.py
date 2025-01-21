@@ -9,14 +9,100 @@ import matplotlib.pyplot as plt
 from collections import Counter
 import threading
 from textblob import TextBlob
+import pyaudio
+import numpy as np
+from faster_whisper import WhisperModel
+import threading
+import time
 
 
-# Load Whisper model
+# Load Whisper and Faster Whisper models
 model = whisper.load_model("medium")
+# faster_model = WhisperModel("medium", device="cpu", compute_type="int8")
+faster_model = WhisperModel("medium", device="cuda", compute_type="float16")  # Użyj "cpu" dla CPU
 
 bart_model_name = "facebook/bart-large-cnn"
 bart_model = BartForConditionalGeneration.from_pretrained(bart_model_name)
 bart_tokenizer = BartTokenizer.from_pretrained(bart_model_name)
+
+# Audio configuration
+CHUNK = 16000  # Liczba próbek w jednym fragmencie (1 sekunda dla 16 kHz)
+FORMAT = pyaudio.paInt16  # Format danych audio
+CHANNELS = 1  # Mono
+RATE = 16000  # Częstotliwość próbkowania
+
+live_transcription_running = False
+transcription_thread = None
+indicator_running = False
+
+def start_live_transcription():
+    global live_transcription_running, transcription_thread, indicator_running
+    live_transcription_running = True
+    indicator_running = True
+    transcription_thread = threading.Thread(target=live_transcription, daemon=True)
+    transcription_thread.start()
+    threading.Thread(target=animate_indicator, daemon=True).start()
+
+def stop_live_transcription():
+    global live_transcription_running, indicator_running
+    live_transcription_running = False
+    indicator_running = False
+    listening_label.config(text="")  # Clear the indicator
+
+def animate_indicator():
+    states = ["Listening.", "Listening..", "Listening..."]
+    idx = 0
+    start_time = time.time()
+    while indicator_running:
+        elapsed_time = int(time.time() - start_time)
+        minutes, seconds = divmod(elapsed_time, 60)
+        time_str = f"{minutes:02}:{seconds:02}"
+        listening_label.config(text=f"{states[idx]} {time_str}")
+        idx = (idx + 1) % len(states)
+        listening_label.update()
+        app.after(500) 
+
+def live_transcription():
+    global live_transcription_running
+    audio = pyaudio.PyAudio()
+
+    # Configure audio stream
+    stream = audio.open(format=FORMAT,
+                        channels=CHANNELS,
+                        rate=RATE,
+                        input=True,
+                        frames_per_buffer=CHUNK)
+
+    transcription_text.delete(1.0, tk.END)  
+    buffer = []
+
+    try:
+        while live_transcription_running:
+            # Read audio data from the microphone
+            data = stream.read(CHUNK, exception_on_overflow=False)
+            buffer.append(np.frombuffer(data, np.int16).astype(np.float32) / 32768.0)  # Normalize audio
+
+            if len(buffer) >= 30:
+                audio_data = np.concatenate(buffer, axis=0)  # Dodaj kontekst
+
+                buffer = []
+
+                segments, _ = faster_model.transcribe(audio_data, beam_size=5, word_timestamps=False)
+                for segment in segments:
+                    transcription_text.insert(tk.END, segment.text + " ")
+                    transcription_text.see(tk.END)
+    except Exception as e:
+        print(f"Error during live transcription: {e}")
+    finally:
+        if buffer:
+            audio_data = np.concatenate(buffer, axis=0)
+            segments, _ = faster_model.transcribe(audio_data, beam_size=5, word_timestamps=False)
+            for segment in segments:
+                transcription_text.insert(tk.END, segment.text + " ")
+                transcription_text.see(tk.END)
+        stream.stop_stream()
+        stream.close()
+        audio.terminate()
 
 def transcribe_audio(file_path):
     result = model.transcribe(file_path)
@@ -172,9 +258,18 @@ lang_menu.bind("<<ComboboxSelected>>", lambda e: change_language(language_option
 upload_button = ttk.Button(app, text="Upload Audio File", command=upload_file)
 upload_button.pack(pady=10)
 
+start_button = ttk.Button(app, text="Start Live Transcription", command=start_live_transcription)
+start_button.pack(pady=10)
+
+stop_button = ttk.Button(app, text="Stop Live Transcription", command=stop_live_transcription)
+stop_button.pack(pady=10)
+
 # Save Button
 save_button = ttk.Button(app, text="Save Results", command=save_results)
 save_button.pack(pady=10)
+
+listening_label = ttk.Label(app, text="", font=("Arial", 14), foreground="green")
+listening_label.pack(pady=10)
 
 # Loading Indicator
 loading_label = ttk.Label(app, text="", font=("Arial", 12), foreground="red")
