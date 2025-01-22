@@ -140,7 +140,6 @@ Naturalnie pliki audio w języku anglieskim wypadały lepiej od reszty.
 
 ## bart-large-cc
 
-Przy testach użyłem transkrypcji audio o wartości tokenów w przedziale 500 - 1300.
 
 | Metryka                            | Średnia Wartość | Zakres     | Opis                                                                                           |
 | ---------------------------------- | --------------- | ---------- | ---------------------------------------------------------------------------------------------- |
