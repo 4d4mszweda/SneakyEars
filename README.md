@@ -146,7 +146,6 @@ Naturalnie pliki audio w języku anglieskim wypadały lepiej od reszty.
 | Średni czas generowania (s)        | 0.85            | 0.6 - 1.2  | Czas potrzebny do wygenerowania podsumowania dla pojedynczego przykładu.                       |
 | Średnia długość wejścia (tokeny)   | 600             | 500 - 1024 | Liczba tokenów w tekstach wejściowych, często limitowana przez maksymalną długość modelu.      |
 | Średnia długość wyjścia (tokeny)   | 120             | 40 - 150   | Liczba tokenów w wygenerowanych podsumowaniach, dostosowana przez parametry max_length.        |
-| Zadowolenie użytkownika (%)        | 91              | 80 - 98    | Procent użytkowników, którzy ocenili podsumowanie jako zadowalające.                           |
 | Spójność semantyczna (%)           | 94              | 88 - 98    | Stopień, w jakim podsumowanie zachowuje główny sens i istotne informacje z tekstu wejściowego. |
 | Precyzja informacji (%)            | 89              | 82 - 95    | Procent podsumowań, które nie zawierały błędów faktograficznych lub fałszywych informacji.     |
 | Procent podsumowań nadmiernych     | 5               | 2 - 10     | Odsetek podsumowań, które zawierały nadmiarowe informacje (np. zbyt dużo szczegółów).          |
